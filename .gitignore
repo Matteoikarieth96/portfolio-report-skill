@@ -1,0 +1,25 @@
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store
+*.log
+.claude/
+
+# generated outputs (commit fictional example outputs on purpose, if any)
+out/
+ci-out/
+
+# workspaces with real portfolio data never belong in the repo
+demo-workspace/
+portfolio_meta.json
+posizioni.csv
+data/
+*.xls
+*.pdf
+report.html
+onepager.html

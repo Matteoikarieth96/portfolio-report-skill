@@ -1,0 +1,1152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio Analysis</title>
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #f1f0ec;
+  --ink: #0b0b0b; --ink-2: #52514e; --muted: #6f6e69;
+  --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s7: #6250d6; --other: #898781;
+  --pos: #006300; --neg: #c03030;
+  --dn4: #184f95; --dn3: #2569c2; --dn2: #6da7ec; --dn1: #b7d3f6; --d0: #f0efec;
+  --dp1: #f7c9c4; --dp2: #ee8f86; --dp3: #c93a35; --dp4: #9e2a26;
+  --on-strong: #ffffff; --on-fill: #ffffff;
+  --shadow: 0 6px 24px rgba(0,0,0,0.12);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #242422;
+    --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --other: #6f6e69;
+    --pos: #3fbf3f; --neg: #f07a7a;
+    --dn4: #8ec0ff; --dn3: #4a8fe0; --dn2: #24548f; --dn1: #1c3a63; --d0: #383835;
+    --dp1: #5c2523; --dp2: #8a302b; --dp3: #e0524b; --dp4: #ff8a80;
+    --on-strong: #0b0b0b; --on-fill: #ffffff;
+    --shadow: 0 6px 24px rgba(0,0,0,0.5);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --surface-2: #242422;
+  --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+  --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --s6: #008300; --s7: #9085e9; --other: #6f6e69;
+  --pos: #3fbf3f; --neg: #f07a7a;
+  --dn4: #8ec0ff; --dn3: #4a8fe0; --dn2: #24548f; --dn1: #1c3a63; --d0: #383835;
+  --dp1: #5c2523; --dp2: #8a302b; --dp3: #e0524b; --dp4: #ff8a80;
+  --on-strong: #0b0b0b; --on-fill: #ffffff;
+  --shadow: 0 6px 24px rgba(0,0,0,0.5);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body { margin: 0; background: var(--page); color: var(--ink);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 28px 16px 72px; }
+h1 { font-size: 30px; line-height: 1.15; margin: 0 0 6px; letter-spacing: -0.01em; }
+/* header row: title on the left, room on the right for page controls (e.g. a toggle button) */
+.hd-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px 16px; flex-wrap: wrap; }
+.hd-tools { display: flex; align-items: center; gap: 8px; flex: none; }
+.hd-tools:empty { display: none; }
+h2 { font-size: 21px; line-height: 1.25; margin: 0 0 6px; }
+h3 { font-size: 15px; margin: 0 0 8px; }
+.sub { color: var(--ink-2); margin: 0; font-size: 14px; }
+.disc { color: var(--ink-2); font-size: 13px; margin: 10px 0 0; }
+nav.toc { display: flex; flex-wrap: wrap; gap: 6px; margin: 18px 0 0; }
+nav.toc a { font-size: 13px; color: var(--ink-2); text-decoration: none; padding: 4px 11px;
+  border: 1px solid var(--border); border-radius: 999px; background: var(--surface); }
+nav.toc a:hover { color: var(--ink); border-color: var(--axis); }
+section { margin-top: 44px; scroll-margin-top: 12px; }
+.lead { color: var(--ink-2); margin: 0 0 14px; max-width: 76ch; }
+.lead.small { font-size: 13px; margin-bottom: 10px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; min-width: 0; }
+.mt { margin-top: 16px; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 16px; }
+.kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 760px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.nw { white-space: nowrap; }
+.hint-m { display: none; }
+.kpi .k { font-size: 12px; color: var(--ink-2); }
+.kpi .v { font-size: 25px; font-weight: 650; margin-top: 2px; line-height: 1.2; }
+.kpi .s { font-size: 12px; color: var(--ink-2); margin-top: 4px; }
+.findings { margin: 0; padding-left: 20px; }
+.findings li { margin: 8px 0; max-width: 84ch; }
+.pos { color: var(--pos); } .neg { color: var(--neg); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--ink-2); margin: 0 0 12px; }
+.legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--c);
+  margin-right: 6px; vertical-align: -1px; }
+.note { font-size: 13px; color: var(--ink-2); margin: 10px 0 0; }
+/* horizontal bars */
+.bars { display: grid; gap: 9px; }
+.brow { display: grid; grid-template-columns: minmax(110px, 210px) minmax(0, 1fr) 64px; gap: 2px 12px;
+  align-items: center; border-radius: 6px; }
+.brow:hover { background: var(--surface-2); }
+.bhead { font-size: 12px; color: var(--ink-2); }
+.bhead:hover { background: none; }
+.blabel { font-size: 13px; line-height: 1.3; padding: 2px 0 2px 4px; }
+.blabel small { display: block; color: var(--ink-2); font-size: 11px; }
+.btracks { display: grid; gap: 2px; min-width: 0; }
+.track { display: flex; align-items: center; gap: 6px; min-height: 12px; }
+.bar { flex: none; height: 10px; border-radius: 0 4px 4px 0; background: var(--c); min-width: 2px; }
+.stack { flex: none; display: flex; gap: 2px; height: 10px; min-width: 2px; }
+.stack .bar { flex-shrink: 1; border-radius: 0; min-width: 1px; }
+.stack .bar:last-child { border-radius: 0 4px 4px 0; }
+.val { font-size: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bextra { font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; padding-right: 4px; }
+@media (max-width: 560px) {
+  .brow { grid-template-columns: minmax(0, 1fr) 60px; }
+  .blabel { grid-column: 1 / -1; padding-bottom: 0; }
+  .bhead .blabel { display: none; }
+}
+/* 100% bars (currencies) */
+.c100 { display: grid; gap: 12px; }
+.c100 .lab { font-size: 13px; margin-bottom: 5px; color: var(--ink-2); }
+.c100 .lab b { color: var(--ink); font-weight: 600; }
+.c100 .row { display: flex; gap: 2px; height: 18px; }
+.c100 .seg { background: var(--c); min-width: 2px; }
+#t-ccy table { width: auto; min-width: min(100%, 380px); }
+#t-overlap table, #t-etfpairs table { min-width: 420px; }
+.c100 .seg:first-child { border-radius: 4px 0 0 4px; }
+.c100 .seg:last-child { border-radius: 0 4px 4px 0; }
+/* tables */
+.tabwrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--grid); vertical-align: top; }
+th { font-weight: 600; color: var(--ink-2); font-size: 12px; white-space: nowrap; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+th[data-k] { cursor: pointer; user-select: none; }
+th[data-k]:hover { color: var(--ink); }
+th .arr { color: var(--ink); }
+tr.grp td { font-weight: 600; font-size: 12px; color: var(--ink-2); background: var(--surface-2); border-bottom: none; }
+.tname { font-weight: 600; }
+.desc { color: var(--ink-2); font-size: 12px; margin-top: 2px; max-width: 48ch; line-height: 1.4; }
+.badge { display: inline-block; font-size: 11px; line-height: 16px; padding: 0 6px; border-radius: 999px;
+  border: 1px solid var(--border); color: var(--ink-2); margin-left: 4px; white-space: nowrap; font-weight: 500; }
+.badge.warn { border-color: var(--axis); color: var(--ink); }
+/* holdings table: a table on a wide screen, cards on a narrow one */
+table.big { min-width: 940px; }
+table.big td.tcell { min-width: 290px; max-width: 380px; }
+.tmeta { font-size: 11px; color: var(--ink-2); margin-top: 4px; line-height: 1.4; }
+@media (max-width: 1000px) {
+  table.big { min-width: 0; }
+  table.big thead { display: none; }
+  table.big, table.big tbody { display: block; }
+  table.big tr { display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 8px 10px;
+    padding: 12px 0; border-bottom: 1px solid var(--grid); }
+  table.big td { display: block; border: none; padding: 0; }
+  table.big td.tcell { grid-column: 1 / -1; min-width: 0; max-width: none; }
+  table.big td.tcell .desc { max-width: none; }
+  table.big td.n { text-align: left; }
+  table.big td.n::before { content: attr(data-l); display: block; font-size: 11px; color: var(--ink-2); font-weight: 400; }
+}
+/* reference-markets table */
+table.fac { min-width: 680px; border-collapse: separate; border-spacing: 2px; }
+table.fac td, table.fac th { border-bottom: none; }
+table.fac th.c { text-align: center; white-space: normal; vertical-align: bottom; width: 66px; }
+td.hc { text-align: center; vertical-align: middle; font-variant-numeric: tabular-nums; font-size: 12px;
+  width: 66px; padding: 6px 4px; border-radius: 3px; }
+table.fac td:first-child, table.fac th:first-child { position: sticky; left: 0; z-index: 1; background: var(--surface); min-width: 150px; }
+table.fac tr.grp td { background: var(--surface-2); }
+.hn4, .hn3, .hp3, .hp4 { color: var(--on-strong); }
+.hn4 { background: var(--dn4); } .hn3 { background: var(--dn3); } .hn2 { background: var(--dn2); }
+.hn1 { background: var(--dn1); } .h0 { background: var(--d0); } .hp1 { background: var(--dp1); }
+.hp2 { background: var(--dp2); } .hp3 { background: var(--dp3); } .hp4 { background: var(--dp4); }
+.hna { background: var(--surface-2); color: var(--ink-2); }
+/* diverging legend */
+.hl { width: min(100%, 380px); margin: 0 0 12px; }
+.hl-row { display: grid; grid-template-columns: repeat(9, 1fr); gap: 2px; }
+.hl-row span { height: 12px; border-radius: 2px; }
+.hl-ticks { position: relative; height: 18px; font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.hl-ticks span { position: absolute; top: 3px; transform: translateX(-50%); }
+.hl-caps { display: grid; grid-template-columns: 1fr auto 1fr; font-size: 11px; color: var(--ink-2); }
+.hl-caps span:nth-child(2) { text-align: center; }
+.hl-caps span:last-child { text-align: right; }
+/* groups */
+.clusters { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+.cl-id { font-size: 12px; color: var(--ink-2); }
+.cl-name { font-size: 15px; margin: 2px 0 0; }
+.cl-m { font-size: 13px; color: var(--ink-2); margin: 4px 0 10px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 6px; background: var(--surface-2);
+  border: 1px solid var(--border); cursor: default; }
+.chip.late { font-weight: 500; border-style: dashed; }
+/* svg charts */
+.chart { width: 100%; min-height: 40px; }
+.chart svg { display: block; }
+.heatwrap { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+.heatwrap svg { max-width: none; }
+svg text { font-family: inherit; }
+.hm-l { font-size: 10px; fill: var(--ink-2); }
+.hm-l.on { fill: var(--ink); font-weight: 700; }
+.gl { stroke: var(--grid); stroke-width: 1; }
+.ax { stroke: var(--axis); stroke-width: 1; }
+.tk { font-size: 11px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+.at { font-size: 12px; fill: var(--ink-2); }
+.pl { font-size: 11px; fill: var(--ink-2); font-weight: 600; }
+.el { font-size: 12px; fill: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.diag { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.halo { paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+.ln { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.xh { stroke: var(--axis); stroke-width: 1; }
+.kv { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 13px; color: var(--ink-2); margin-top: 12px; }
+.kv b { color: var(--ink); font-weight: 600; }
+/* ETF cards */
+.etfcards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 12px; margin-top: 16px; }
+.etf h3 { margin-bottom: 2px; }
+.etf .meta { font-size: 12px; color: var(--ink-2); margin-bottom: 8px; }
+.etf dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; font-size: 12px; margin: 0 0 10px; }
+.etf dt { color: var(--ink-2); }
+.etf dd { margin: 0; }
+.etf .hold { font-size: 12px; margin: 0 0 8px; padding-left: 18px; }
+.etf .hold li { margin: 1px 0; }
+.etf .q { font-size: 12px; color: var(--ink-2); border-top: 1px solid var(--grid); padding-top: 8px; margin-top: 8px; }
+.etf .src { font-size: 11px; color: var(--ink-2); margin-top: 6px; word-break: break-word; }
+.etf .src a { color: var(--ink-2); white-space: nowrap; }
+.crit { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px 28px; }
+.crit-i { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 10px; }
+.crit-n { width: 24px; height: 24px; border-radius: 50%; background: var(--surface-2); border: 1px solid var(--border);
+  font-size: 12px; font-weight: 600; display: grid; place-items: center; }
+.crit-i p, .lever p { margin: 3px 0 0; font-size: 14px; color: var(--ink-2); }
+.crit-i p b { color: var(--ink); font-weight: 600; }
+.levers { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); gap: 12px; }
+.lever { border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; background: var(--surface-2); }
+.lever .refs { font-size: 12px; color: var(--ink-2); margin-top: 8px; }
+.lgroup { font-size: 13px; font-weight: 650; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 0 8px; }
+.method { margin: 0; padding-left: 20px; font-size: 14px; }
+.method li { margin: 6px 0; max-width: 90ch; }
+/* donuts, treemap, diverging bars */
+.donut { display: flex; align-items: center; gap: 14px; }
+.donut svg { flex: none; }
+.dleg { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; min-width: 0; flex: 1; }
+.dleg li { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; gap: 6px; align-items: center; font-size: 12.5px; line-height: 1.25; color: var(--ink-2); cursor: default; }
+.dleg .sw { width: 10px; height: 10px; border-radius: 2px; background: var(--c); }
+.dleg .dk { overflow-wrap: anywhere; }
+.dleg .dv { color: var(--ink); font-variant-numeric: tabular-nums; font-weight: 600; }
+.dc { font-size: 15px; font-weight: 650; fill: var(--ink); font-variant-numeric: tabular-nums; }
+.tml { font-size: 11px; font-weight: 650; fill: #0b0b0b; pointer-events: none; }
+.tmv { font-size: 10.5px; fill: #0b0b0b; pointer-events: none; font-variant-numeric: tabular-nums; }
+.bl { font-size: 12px; fill: var(--ink); }
+.bv { font-size: 11.5px; fill: var(--ink-2); font-variant-numeric: tabular-nums; }
+.donuts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+.tip { position: fixed; z-index: 20; pointer-events: none; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--border); box-shadow: var(--shadow); border-radius: 8px; padding: 8px 10px;
+  font-size: 13px; max-width: 300px; line-height: 1.4; }
+.tip .t1 { font-weight: 600; }
+.tip div + div { color: var(--ink-2); }
+@media (max-width: 560px) {
+  h1 { font-size: 25px; }
+  .kpi .v { font-size: 22px; }
+  th { white-space: normal; }
+  .hint-m { display: block; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="hd-top">
+    <h1>Portfolio analysis</h1>
+    <div class="hd-tools" id="hide-slot"></div>
+  </div>
+  <p class="sub" id="sub"></p>
+  <nav class="toc" aria-label="Sections">
+    <a href="#sintesi">Summary</a><a href="#composizione">Composition and growth</a><a href="#critica">Critique</a><a href="#temi">Themes</a><a href="#settori">Sectors, regions and currencies</a>
+    <a href="#dipendenze">Dependencies</a><a href="#fattori">Reference markets</a><a href="#rischio">Risk and scenarios</a>
+    <a href="#etf">Inside the ETFs</a><a href="#titoli">Holding by holding</a><a href="#metodo">Method and limits</a><a href="onepager.html">Everything on one page</a>
+  </nav>
+  <p class="disc">Descriptive analysis for information only. It is not financial advice, and I am not a licensed financial adviser.</p>
+</header>
+
+<section id="sintesi">
+  <h2>Summary</h2>
+  <div class="kpis" id="kpis"></div>
+  <div class="card mt"><h3>What stands out</h3><ul class="findings" id="findings"></ul></div>
+</section>
+
+<section id="composizione">
+  <h2>Composition and growth</h2>
+  <p class="lead">How the portfolio is built today, and how the holdings you own now would have done over time.</p>
+  <div class="card"><h3>What today's holdings are worth over time</h3>
+    <p class="lead small">Euro value of the quantities you hold today, week by week, split by theme. The dashed line puts the same money in the MSCI World.</p>
+    <div class="legend" id="lg-va"></div><div class="chart" id="ch-va"></div>
+    <p class="note" id="va-note"></p></div>
+  <div class="donuts mt">
+    <div class="card"><h3>Stocks and ETFs</h3><div id="dn-kind"></div></div>
+    <div class="card"><h3>Themes</h3><div id="dn-theme"></div></div>
+    <div class="card"><h3>Sectors</h3><div id="dn-sect"></div></div>
+    <div class="card"><h3>Regions</h3><div id="dn-reg"></div></div>
+    <div class="card"><h3>Quote currency</h3><div id="dn-ccyq"></div></div>
+    <div class="card"><h3>Underlying currency</h3><div id="dn-ccye"></div></div>
+  </div>
+  <p class="note" id="dn-note"></p>
+  <div class="card mt"><h3>Every position by weight</h3>
+    <p class="lead small">The area of each rectangle is its weight in the total, the colour is its theme. Hover over a rectangle for details.</p>
+    <div class="legend" id="lg-tm"></div><div class="chart" id="ch-tm"></div></div>
+  <div class="grid2 mt">
+    <div class="card"><h3>Gain or loss on cost by theme</h3><p class="lead small">Value today minus purchase cost, open positions only. Dividends and sales are excluded.</p><div class="chart" id="ch-pnl"></div></div>
+    <div class="card"><h3>How far it fell from the peak</h3><p class="lead small">Distance from the highest point reached before, with today's quantities unchanged and with the MSCI World in euros.</p>
+      <div class="legend" id="lg-dd"></div><div class="chart" id="ch-dd"></div></div>
+  </div>
+</section>
+
+<section id="critica">
+  <h2>Critique</h2>
+  <p class="lead">The weaknesses that show in the numbers, the strengths, and general portfolio-construction criteria, in three groups: on risk, on diversification, other.</p>
+  <div class="card"><h3>Weaknesses</h3><ol class="crit" id="crit-weak"></ol></div>
+  <div class="card mt"><h3>Strengths</h3><ul class="findings" id="crit-strong"></ul></div>
+  <div class="card mt"><h3>General criteria</h3>
+    <p class="lead small" id="crit-caveat"></p>
+    <div id="crit-levers"></div>
+    <p class="note" id="crit-tax"></p>
+  </div>
+</section>
+
+<section id="temi">
+  <h2>Themes: how much they weigh and how much risk they carry</h2>
+  <p class="lead">For each theme, its weight in the value and the share of the portfolio's swings it carries. When the orange bar is longer than the blue one, the theme moves the total more than its weight.</p>
+  <div class="card"><div class="legend" id="lg-themes"></div><div id="ch-themes"></div></div>
+</section>
+
+<section id="settori">
+  <h2>Sectors, regions and currencies</h2>
+  <p class="lead" id="sect-lead"></p>
+  <div class="card"><h3>Sectors</h3><div class="legend" id="lg-sect"></div><div id="ch-sect"></div></div>
+  <div class="card mt" id="indep-card"><h3>Which sectors move on their own</h3>
+    <p class="lead small" id="indep-lead"></p>
+    <div class="legend" id="lg-indep"></div>
+    <div class="tabwrap" id="t-indep"></div>
+    <p class="note" id="indep-note"></p>
+  </div>
+  <div class="grid2 mt">
+    <div class="card"><h3>Regions</h3><div id="ch-regions"></div></div>
+    <div class="card"><h3>Main countries</h3><div id="ch-countries"></div></div>
+  </div>
+  <div class="card mt"><h3>Currencies</h3>
+    <p class="lead small">The quote currency is the one you buy the holding in. The economic currency here is the currency of the country where the company is based (for ETFs, of the companies they hold). A US stock bought in Milan in euros is still converted from the dollar. Where the company earns its revenue does not count: a European company that sells mostly in Asia still counts as euro.</p>
+    <div class="legend" id="lg-ccy"></div><div id="ch-ccy"></div><div class="tabwrap mt" id="t-ccy"></div>
+  </div>
+</section>
+
+<section id="dipendenze">
+  <h2>Dependencies between holdings</h2>
+  <p class="lead">Correlation runs from -1 (they move in opposite directions) to +1 (they move together) and is computed on weekly euro returns over the last two years. Several highly correlated holdings behave like a single position.</p>
+  <h3>Groups that move together</h3>
+  <p class="lead small">The groups come from price moves, not from the sector: the name describes most of the holdings in the group, not necessarily all of them.</p>
+  <div class="clusters" id="clusters"></div>
+  <p class="note" id="loners"></p>
+  <div class="card mt"><h3>Correlation map</h3>
+    <p class="lead small">Holdings sorted by group: the outlined squares are the groups above. Hover over or tap a cell to read the value; an asterisk marks holdings with less than a year of history.</p>
+    <div id="lg-heat"></div><div class="heatwrap" id="ch-heat"></div>
+    <p class="note hint-m">Scroll sideways to see the whole map.</p>
+  </div>
+  <div class="grid2 mt">
+    <div class="card"><h3>Most closely linked pairs</h3><div class="tabwrap" id="t-pairs-top"></div></div>
+    <div class="card"><h3>Most independent pairs</h3><p class="lead small">Only holdings with at least a year of history.</p><div class="tabwrap" id="t-pairs-low"></div></div>
+  </div>
+</section>
+
+<section id="fattori">
+  <h2>Which markets each holding depends on</h2>
+  <p class="lead">Weekly correlation of each holding with seven reference markets, in euros. The redder the cell, the more the holding tends to rise and fall with that market. “Dollar” is the dollar's exchange rate against the euro.</p>
+  <div class="card"><div id="lg-fac"></div><div class="tabwrap" id="t-fac"></div><p class="note hint-m">Scroll sideways to see all the markets.</p></div>
+</section>
+
+<section id="rischio">
+  <h2>Risk and scenarios</h2>
+  <div class="card"><h3>Weight and risk of each holding</h3>
+    <p class="lead small">Above the diagonal, a holding carries more risk than its weight, because it swings a lot or because it moves with the rest of the portfolio. Hover over or tap a dot for details.</p>
+    <div class="legend" id="lg-sc"></div><div class="chart" id="ch-scatter"></div>
+  </div>
+  <div class="card mt"><h3>Today's holdings over the last two years: two ways of counting</h3>
+    <p class="lead small">A hindsight simulation with the holdings chosen today, so it is neither your return nor a forecast. <b>Today's weights, fixed</b>: rebalances every week to today's weights; since the weights are high precisely in the holdings that have already risen, it counts the same gain twice and overstates. <b>Today's quantities, unchanged</b>: keeps the same number of shares for two years without rebalancing (a holding listed later counts as cash until its first price).</p>
+    <div class="legend" id="lg-bt"></div><div class="chart" id="ch-bt"></div><div class="kv" id="bt-stats"></div>
+  </div>
+  <div class="grid2 mt">
+    <div class="card"><h3>Scenarios</h3><p class="lead small">Estimated effect of a market move, from the average sensitivity of the last two years. Each scenario includes the typical stock-market move that comes with it, so they do not add up. The shocks differ in size: compare the figures, not the bars.</p><div class="tabwrap" id="t-stress"></div><p class="note" id="stress-fx"></p></div>
+    <div class="card"><h3>Worst weeks in the simulation</h3><div class="tabwrap" id="t-worst"></div></div>
+  </div>
+</section>
+
+<section id="etf">
+  <h2>Inside the ETFs</h2>
+  <p class="lead" id="etf-lead"></p>
+  <div class="grid2">
+    <div class="card"><h3>Holdings you own twice</h3><p class="lead small">Stocks you hold directly that also sit inside one of your ETFs.</p><div class="tabwrap" id="t-overlap"></div></div>
+    <div class="card"><h3>Holdings you own only through ETFs</h3><p class="lead small">The largest indirect exposures, summed across the ETFs.</p><div id="ch-hidden"></div></div>
+  </div>
+  <div class="card mt"><h3>ETFs with holdings in common</h3><div class="tabwrap" id="t-etfpairs"></div></div>
+  <div class="etfcards" id="etfcards"></div>
+</section>
+
+<section id="titoli">
+  <h2>Holding by holding</h2>
+  <p class="lead">The gain or loss is on the purchase price; last year, volatility and maximum drawdown are computed in euros. On a wide screen you can sort the table by clicking a column header.</p>
+  <div class="card"><div class="tabwrap" id="t-assets"></div></div>
+</section>
+
+<section id="metodo">
+  <h2>Method and limits</h2>
+  <div class="card"><ul class="method" id="method"></ul></div>
+</section>
+</div>
+<div class="tip" id="tip" hidden></div>
+<script id="data" type="application/json">__DATA__</script>
+<script>
+(() => {
+'use strict';
+const D = JSON.parse(document.getElementById('data').textContent);
+const $ = s => document.querySelector(s);
+
+/* ---------- formats ---------- */
+const NF = {};
+const nf = d => NF[d] || (NF[d] = new Intl.NumberFormat('en-GB', {minimumFractionDigits: d, maximumFractionDigits: d, useGrouping: 'always'}));
+const isNum = x => typeof x === 'number' && isFinite(x);
+const NA = 'n/a';
+const pct = (x, d = 1) => isNum(x) ? nf(d).format(x * 100) + '%' : NA;
+const tiny = (x, d = 2) => isNum(x) && x > 0 && x < 0.5 * Math.pow(10, -d - 2) ? `less than ${nf(d).format(Math.pow(10, -d))}%` : pct(x, d);
+const spct = (x, d = 1) => isNum(x) ? (x > 0 ? '+' : '') + nf(d).format(x * 100) + '%' : NA;
+const eur = x => { if (!isNum(x)) return NA; const r = Math.round(x); return (r < 0 ? '-' : '') + '€' + nf(0).format(Math.abs(r)); };
+const seur = x => { if (!isNum(x)) return NA; const r = Math.round(x); return (r > 0 ? '+' : r < 0 ? '-' : '') + '€' + nf(0).format(Math.abs(r)); };
+const dec = (x, d = 2) => isNum(x) ? nf(d).format(x) : NA;
+const sgn = x => !isNum(x) ? '' : x > 0 ? 'pos' : x < 0 ? 'neg' : '';
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const NB = ' ';
+const fmtDate = s => { if (!s) return NA; const [y, m, d] = String(s).slice(0, 10).split('-'); return `${+d}${NB}${MONTHS[+m - 1]}${NB}${y}`; };
+/* dates written inside data notes (27/10/2026 or 2026-10-27) become 27 Oct 2026 */
+const fixDates = s => String(s)
+  .replace(/\b(\d{1,2})\/(\d{1,2})\/(\d{4})\b/g, (_, d, m, y) => `${+d}${NB}${MONTHS[+m - 1]}${NB}${y}`)
+  .replace(/\b(\d{4})-(\d{2})-(\d{2})\b/g, (_, y, m, d) => `${+d}${NB}${MONTHS[+m - 1]}${NB}${y}`);
+const cor = v => isNum(v) ? dec(Math.abs(v) < 0.005 ? 0 : v) : NA;
+const cleanName = s => String(s || '').replace(/\s*\(NY registry shares\)/i, '');
+const list = a => a.length <= 1 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+const CCY = {EUR: 'Euro', USD: 'US dollar', BRL: 'Brazilian real', GBP: 'Pound sterling', CHF: 'Swiss franc',
+  JPY: 'Japanese yen', 'CNY/HKD': 'Yuan and Hong Kong dollar', TWD: 'Taiwan dollar', KRW: 'Korean won',
+  CAD: 'Canadian dollar', AUD: 'Australian dollar', Other: 'Other currencies'};
+
+/* ---------- elements ---------- */
+function h(tag, props, ...kids) {
+  const n = document.createElement(tag);
+  if (props) for (const [k, v] of Object.entries(props)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') n.className = v;
+    else if (k === 'text') n.textContent = v;
+    else n.setAttribute(k, v);
+  }
+  for (const c of kids.flat(Infinity)) if (c != null && c !== false) n.append(c instanceof Node ? c : String(c));
+  return n;
+}
+const NS = 'http://www.w3.org/2000/svg';
+function sv(tag, attrs, parent) {
+  const n = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs || {})) n.setAttribute(k, v);
+  if (parent) parent.append(n);
+  return n;
+}
+function svText(parent, x, y, str, attrs) { const t = sv('text', Object.assign({x, y}, attrs || {}), parent); t.textContent = str; return t; }
+function legend(root, items) {
+  root.replaceChildren(...items.map(([label, c]) => { const s = h('span', {class: 'sw'}); s.style.setProperty('--c', c); return h('span', null, s, label); }));
+}
+
+/* ---------- tooltip ---------- */
+const tip = $('#tip');
+function tipShow(e, lines) {
+  tip.replaceChildren(...lines.filter(Boolean).map((l, i) => h('div', {class: i ? null : 't1', text: l})));
+  tip.hidden = false;
+  tipMove(e);
+}
+function tipMove(e) {
+  const r = tip.getBoundingClientRect(), pad = 14;
+  let x = e.clientX + pad, y = e.clientY + pad;
+  if (x + r.width > innerWidth - 8) x = Math.max(8, e.clientX - r.width - pad);
+  if (y + r.height > innerHeight - 8) y = Math.max(8, e.clientY - r.height - pad);
+  tip.style.left = x + 'px';
+  tip.style.top = y + 'px';
+}
+function tipHide() { tip.hidden = true; }
+/* mouse: follows the pointer; touch: one tap shows, a tap elsewhere hides */
+function bindTip(node, fn) {
+  node.addEventListener('pointerenter', e => { if (e.pointerType !== 'touch') tipShow(e, fn()); });
+  node.addEventListener('pointermove', e => { if (e.pointerType !== 'touch') tipMove(e); });
+  node.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch') tipHide(); });
+  node.addEventListener('click', e => { tipShow(e, fn()); e.stopPropagation(); });
+}
+addEventListener('scroll', tipHide, {passive: true});
+document.addEventListener('click', tipHide);
+
+/* ---------- diverging scale for correlations ---------- */
+const binOf = v => v >= 0.8 ? 4 : v >= 0.6 ? 3 : v >= 0.4 ? 2 : v >= 0.2 ? 1 : v > -0.2 ? 0 : v > -0.4 ? -1 : v > -0.6 ? -2 : v > -0.8 ? -3 : -4;
+const binVar = b => b === 0 ? 'var(--d0)' : `var(--d${b < 0 ? 'n' : 'p'}${Math.abs(b)})`;
+const binCls = b => b === 0 ? 'h0' : `h${b < 0 ? 'n' : 'p'}${Math.abs(b)}`;
+function heatLegend(root) {
+  const row = h('div', {class: 'hl-row'}, [-4, -3, -2, -1, 0, 1, 2, 3, 4].map(b => { const s = h('span'); s.style.background = binVar(b); return s; }));
+  const ticks = h('div', {class: 'hl-ticks'}, ['-0.8', '-0.6', '-0.4', '-0.2', '+0.2', '+0.4', '+0.6', '+0.8'].map((t, k) => {
+    const s = h('span', {text: t}); s.style.left = `${(k + 1) / 9 * 100}%`; return s;
+  }));
+  const caps = h('div', {class: 'hl-caps'}, h('span', {text: 'opposite directions'}), h('span', {text: 'independent'}), h('span', {text: 'together'}));
+  root.replaceChildren(h('div', {class: 'hl'}, row, ticks, caps));
+}
+
+/* ---------- shared data ---------- */
+const T = D.totals, P = D.portfolio, BT = P.bt;
+const A = Object.fromEntries(D.assets.map(a => [a.ticker, a]));
+const SHORT = D.assets.filter(a => a.short).sort((a, b) => b.w - a.w);
+const isShort = t => !!(A[t] && A[t].short);
+const stressOf = f => D.stress.find(s => s.factor === f) || {};
+const hasEtf = D.etfs.some(e => e.top_holdings && e.top_holdings.length);
+const themeOrder = D.themes.map(t => t.theme);
+
+/*__CHARTS__*/
+const TC = XC.themeColors(D);
+function compoLegends() {
+  const VH = D.value_hist;
+  const lay = VH.themes.slice(0, 6).map(t => [t.theme, TC(t.theme)]);
+  if (VH.themes.length > 6) lay.push(['Other themes', 'var(--other)']);
+  legend($('#lg-va'), [...lay, ['Same money in the MSCI World (dashed)', 'var(--ink)']]);
+  legend($('#lg-tm'), lay);
+  legend($('#lg-dd'), [["Today's quantities, unchanged", 'var(--s3)'], ['MSCI World (in euros)', 'var(--s2)']]);
+  const late = VH.late || [];
+  $('#va-note').textContent = `This is not your account's history: the export has no purchase dates. ` +
+    (late.length ? `The steps are holdings that started trading after the start (${list(late.map(l => l.ticker))}): they enter at their value, and the same amount enters the MSCI World at the same moment. ` : '') +
+    `End of period: ${eur(VH.total[VH.total.length - 1])} against ${eur(VH.world[VH.world.length - 1])}.`;
+  const kind = [['Stocks', 'Stock'], ['ETFs', 'ETF']].map(([k, kk], i) => {
+    const as = D.assets.filter(a => a.kind === kk);
+    return {k: `${k} (${as.length})`, w: as.reduce((s, a) => s + a.w, 0), eur: as.reduce((s, a) => s + a.value, 0), c: XC.SLOTS[i]};
+  });
+  XC.donut($('#dn-kind'), kind, {center: eur(T.value), centerSub: `${T.n_assets} holdings`, label: 'Stocks and ETFs'});
+  const th = D.themes.map(t => ({k: t.theme, w: t.w}));
+  const thItems = XC.topN(th, 6, 'Other themes').map(it => ({...it, c: it.k === 'Other themes' ? 'var(--other)' : TC(it.k)}));
+  XC.donut($('#dn-theme'), thItems, {center: String(D.themes.length), centerSub: 'themes', label: 'Themes'});
+  const se = D.sectors.map(x => ({k: x.sector, w: x.stock + x.etf}));
+  XC.donut($('#dn-sect'), XC.topN(se, 7, 'Other sectors'), {label: 'Sectors'});
+  XC.donut($('#dn-reg'), XC.topN(D.regions, 6, 'Other'), {label: 'Regions'});
+  XC.donut($('#dn-ccyq'), XC.topN(D.ccy_quote, 6, 'Other'), {label: 'Quote currency'});
+  XC.donut($('#dn-ccye'), XC.topN(D.ccy_eco, 4, 'Other and not broken down'), {label: 'Underlying currency'});
+  const nsc = (D.sectors.find(x => x.key === 'ETF not broken down') || {}).etf;
+  $('#dn-note').textContent = 'Sectors, regions and underlying currency count the ETFs by the companies they hold. Grey shows the smaller items added together'
+    + (nsc > 0.001 ? `, including ${pct(nsc)} in ETFs with no holdings data available.` : '.');
+}
+const drawVA = el => XC.valueArea(el, D.value_hist, TC);
+const drawTM = el => XC.treemap(el, D.assets, TC);
+const drawDD = el => XC.drawdown(el, BT);
+const drawPnl = el => XC.pnlBars(el, D.themes.map(t => ({k: t.theme, v: t.value - t.cost, value: t.value, cost: t.cost})).sort((a, b) => b.v - a.v));
+
+/* ---------- horizontal bars ---------- */
+function hbars(root, rows, o) {
+  const tot = r => r.values.reduce((s, v) => s + v, 0);
+  const max = o.max || Math.max(...rows.flatMap(r => o.stacked ? [tot(r)] : r.values), 1e-9);
+  const box = h('div', {class: 'bars'});
+  if (o.extraHead) box.append(h('div', {class: 'brow bhead'}, h('div', {class: 'blabel'}), h('div'), h('div', {class: 'bextra', text: o.extraHead})));
+  for (const r of rows) {
+    const tracks = h('div', {class: 'btracks'});
+    if (o.stacked) {
+      const st = h('div', {class: 'stack'});
+      st.style.width = `calc((100% - 58px) * ${tot(r) / max})`;
+      r.values.forEach((v, k) => {
+        if (v <= 0) return;
+        const b = h('div', {class: 'bar'});
+        b.style.flexGrow = v / tot(r);
+        b.style.flexBasis = '0';
+        b.style.setProperty('--c', o.colors[k]);
+        st.append(b);
+      });
+      tracks.append(h('div', {class: 'track'}, st, h('span', {class: 'val', text: o.fmt(tot(r))})));
+    } else {
+      r.values.forEach((v, k) => {
+        const b = h('div', {class: 'bar'});
+        b.style.width = `calc((100% - 58px) * ${Math.max(v, 0) / max})`;
+        b.style.setProperty('--c', o.colors[k]);
+        tracks.append(h('div', {class: 'track'}, b, h('span', {class: 'val', text: o.fmt(v)})));
+      });
+    }
+    const ex = r.extra ? h('div', {class: 'bextra ' + (r.extra.cls || ''), text: r.extra.text}) : h('div');
+    const row = h('div', {class: 'brow'}, h('div', {class: 'blabel'}, r.label, r.sub ? h('small', {text: r.sub}) : null), tracks, ex);
+    if (r.tip) bindTip(row, () => r.tip);
+    box.append(row);
+  }
+  root.replaceChildren(box);
+}
+
+/* ---------- header and summary ---------- */
+$('#sub').textContent = (D.demo ? `Fictional demo: ${T.n_assets} invented holdings with simulated prices to ${fmtDate(D.prices_to)}, report generated on ${fmtDate(D.generated)}. The numbers mean nothing.`
+  : `${T.n_assets} holdings from the Fineco export “${D.export_file}”. Yahoo Finance prices to ${fmtDate(D.prices_to)}, report generated on ${fmtDate(D.generated)}.`)
+  + ((D.no_prices || []).length ? ` Left out for lack of prices: ${D.no_prices.map(x => x.ticker).join(', ')}.` : '');
+
+function kpis() {
+  const sw = stressOf('MSCI World');
+  const items = [
+    ['Market value', eur(T.value), `cost basis ${eur(T.cost)}`],
+    ['Gain or loss on cost', seur(T.pnl), `${spct(T.pnl_pct)}, open positions; dividends and sales excluded`, sgn(T.pnl)],
+    ['Holdings', String(T.n_assets), `${T.n_assets - T.n_etf} stocks and ${T.n_etf} ETFs; about ${Math.round(P.n_bets)} independent bets`],
+    ['Annual volatility', pct(BT.port_stats.vol), `last 2 years with today's weights; MSCI World ${pct(BT.world_stats.vol)}`],
+    ['Beta to world stocks', dec(P.beta['MSCI World']), `MSCI World${NB}-10%: about${NB}${spct(sw.impact)}`],
+    ['Weight of the top 10 holdings', pct(P.top10_w), `top 5: ${pct(P.top5_w)}`],
+  ];
+  $('#kpis').replaceChildren(...items.map(([k, v, s, c]) => h('div', {class: 'card kpi'},
+    h('div', {class: 'k', text: k}), h('div', {class: 'v ' + (c || ''), text: v}), h('div', {class: 's', text: s}))));
+}
+
+function findings() {
+  const ul = $('#findings');
+  const add = (...parts) => ul.append(h('li', null, parts.map(p => Array.isArray(p) ? h('b', {text: p[0]}) : p)));
+  const th = [...D.themes].sort((a, b) => (b.rc - b.w) - (a.rc - a.w))[0];
+  if (th) add('The theme ', [th.theme], ` is ${pct(th.w)} of the portfolio but carries ${pct(th.rc)} of the swings: it is the part that moves the total most.`);
+  const ar = [...D.assets].sort((a, b) => b.rc - a.rc)[0];
+  if (ar) add([`${ar.name} (${ar.ticker})`], ` alone carries ${pct(ar.rc)} of the risk with ${pct(ar.w)} of the value: volatility of ${pct(ar.vol, 0)} a year and a beta of ${dec(ar.beta)} to world stocks.`);
+  const c1 = D.clusters[0];
+  if (c1) {
+    const late = c1.late || [];
+    add(`${c1.tickers.length} positions tend to move together (group “${c1.name}”, average correlation ${cor(c1.avg_corr)}): `, [list(c1.tickers)],
+      `. Together they are ${pct(c1.w)} of the value and ${pct(c1.rc)} of the risk.`
+      + (late.length ? ` ${list(late)} ${late.length > 1 ? 'have' : 'has'} less than a year of history: the link is still to be confirmed.` : ''));
+  }
+  const cc = D.clusters.filter(c => c.tickers.length >= 3).sort((a, b) => b.avg_corr - a.avg_corr)[0];
+  if (cc && cc !== c1) add([list(cc.tickers)], ` have an average correlation of ${cor(cc.avg_corr)} with each other: they behave almost like a single position, equal to ${pct(cc.w)} of the portfolio.`);
+  for (const [f, what] of [['Bitcoin', 'Bitcoin'], ['Gold', 'gold']]) {
+    const L = D.assets.filter(a => !a.short && ((a.fcorr || {})[f] || 0) >= 0.4).sort((a, b) => b.fcorr[f] - a.fcorr[f]);
+    if (L.length >= 2) {
+      const lo = Math.min(...L.map(a => a.fcorr[f])), hi = Math.max(...L.map(a => a.fcorr[f]));
+      add([list(L.map(a => a.ticker))], ` follow ${what} (correlation from ${cor(lo)} to ${cor(hi)}): together they are ${pct(L.reduce((s, a) => s + a.w, 0))} of the portfolio.`);
+    }
+  }
+  const b = P.beta['MSCI World'], sw = stressOf('MSCI World');
+  add(b > 1 ? 'The portfolio amplifies the markets: ' : 'The portfolio follows the markets in a damped way: ', [`beta ${dec(b)}`],
+    ` to the MSCI World. With world stocks at${NB}-10%, the estimate is${NB}${spct(sw.impact)} (about${NB}${seur(sw.impact_eur)}).`);
+  const qe = (D.ccy_quote.find(r => r.k === 'EUR') || {}).w, eu = (D.ccy_eco.find(r => r.k === 'USD') || {}).w, fx = stressOf('Dollar');
+  add(`${pct(qe, 0)} of the value is quoted in euros, but `, [`about ${pct(eu, 0)} depends on the dollar`],
+    `: a US stock bought in Milan in euros stays exposed to the exchange rate. At unchanged dollar prices, a dollar 10% weaker is worth about${NB}${seur(fx.impact_eur)} from conversion alone; with the sensitivity measured over the last two years it would be about${NB}${seur(fx.obs_impact_eur)}.`);
+  const dv = D.assets.filter(a => a.w >= 0.015 && !a.short).sort((a, b) => a.corr_port - b.corr_port).slice(0, 4);
+  if (dv.length) add('The positions most independent of the rest are ', [list(dv.map(a => a.name))],
+    ` (correlation with the portfolio between ${cor(dv[0].corr_port)} and ${cor(dv[dv.length - 1].corr_port)}): they dampen the overall swings.`);
+  const tp = [...D.themes].sort((a, b) => a.pnl_pct - b.pnl_pct);
+  add('Against the purchase price, the weakest theme is ', [tp[0].theme], ` (${spct(tp[0].pnl_pct)}) and the strongest is `, [tp[tp.length - 1].theme], ` (${spct(tp[tp.length - 1].pnl_pct)}).`);
+  if (hasEtf) {
+    const tot = D.overlap.reduce((s, o) => s + o.via_w, 0);
+    const big = [...D.overlap].sort((a, b) => b.via_w - a.via_w).slice(0, 3);
+    add('The ETFs repeat little of what you already hold: ', [`the overlaps add up to ${pct(tot, 1)} of the portfolio`],
+      big.length ? ` (the largest: ${list(big.map(o => `${o.ticker} +${pct(o.via_w, 2)} via ${o.via.map(v => v.etf).join(' and ')}`))}). The real dependencies come through correlations, not through shared holdings.` : '.');
+  }
+  const ps = BT.port_stats, ws = BT.world_stats, hs = BT.hold_stats;
+  add("Over the last two years, today's holdings would have made ", [spct(hs.total)], " with today's quantities unchanged and ",
+    [spct(ps.total)], ` with today's weights fixed (which overstates), against ${spct(ws.total)} for the MSCI World, with ${ps.vol > ws.vol ? 'wider' : 'narrower'} swings (${pct(ps.vol, 0)} against ${pct(ws.vol, 0)}). These are hindsight calculations, not your return: the ${spct(T.pnl_pct)} on cost does not include dividends, sales or fees.`);
+  if (SHORT.length) add(`${SHORT.length} holdings have less than a year of price history (`, [list(SHORT.map(a => a.ticker))], '): for them, correlations and volatility are fragile estimates.');
+}
+
+/* ---------- themes, sectors, regions ---------- */
+function themes() {
+  legend($('#lg-themes'), [['Weight in value', 'var(--s1)'], ['Share of risk', 'var(--s2)']]);
+  hbars($('#ch-themes'), D.themes.map(t => ({
+    label: t.theme, sub: t.tickers.join(' '), values: [t.w, t.rc],
+    extra: {text: spct(t.pnl_pct), cls: sgn(t.pnl_pct)},
+    tip: [t.theme, `weight ${pct(t.w)}, share of risk ${pct(t.rc)}`, `gain or loss on cost ${spct(t.pnl_pct)} (${seur(t.value - t.cost)})`, `${t.n} holdings: ${t.tickers.join(', ')}`],
+  })), {colors: ['var(--s1)', 'var(--s2)'], fmt: v => pct(v), extraHead: 'P&L'});
+}
+
+function sectors() {
+  $('#sect-lead').textContent = hasEtf
+    ? 'The ETFs are broken down into the companies they hold, so sectors, countries and currencies also count what sits inside the funds.'
+    : 'ETF holdings are not available: their share shows as “ETF not broken down”.';
+  legend($('#lg-sect'), [['Direct stocks', 'var(--s1)'], ['Inside the ETFs', 'var(--s2)']]);
+  const rows = D.sectors.filter(s => s.stock + s.etf >= 0.0005);
+  hbars($('#ch-sect'), rows.map(s => ({
+    label: s.sector, values: [s.stock, s.etf],
+    tip: [s.sector, `${pct(s.stock + s.etf)} of the value`, `direct stocks ${pct(s.stock)}`, `inside the ETFs ${pct(s.etf)}`],
+  })), {stacked: true, colors: ['var(--s1)', 'var(--s2)'], fmt: v => pct(v)});
+  hbars($('#ch-regions'), D.regions.filter(r => r.w >= 0.0005).map(r => ({label: r.k, values: [r.w], tip: [r.k, `${pct(r.w)} of the value`]})),
+    {colors: ['var(--s1)'], fmt: v => pct(v)});
+  const top = D.countries.filter(c => c.k !== 'Cash and other').slice(0, 12);
+  const rest = D.countries.filter(c => !top.includes(c)).reduce((s, c) => s + c.w, 0);
+  const rows2 = top.map(c => ({label: c.k, values: [c.w], tip: [c.k, `${pct(c.w)} of the value`]}));
+  if (rest > 0.0005) rows2.push({label: 'Other countries and cash', values: [rest], tip: ['Other countries and cash', `${pct(rest)} of the value`]});
+  hbars($('#ch-countries'), rows2, {colors: ['var(--s1)'], fmt: v => pct(v)});
+}
+
+function indep() {
+  const X = D.sector_indep;
+  if (!X) { $('#indep-card').remove(); return; }
+  const PK = X.targets[0], [th1, th2] = X.targets.slice(1);
+  const R = X.rows, lo = R.filter(r => r.corr[PK] < 0.3).map(r => r.sector);
+  const hi = R[R.length - 1];
+  $('#indep-lead').textContent = `Correlation of each sector's weekly euro returns (US sector ETFs) with your portfolio and with the two themes that carry the most risk, over the last ${X.weeks} weeks. `
+    + `Near 0: the sector moves on its own; near 1: it moves like what you already hold. `
+    + (lo.length ? `Below 0.3 with the portfolio: ${list(lo.map(x => x.toLowerCase()))}. ` : 'No sector is below 0.3 with the portfolio. ')
+    + `The most similar is ${hi.sector.toLowerCase()} (${cor(hi.corr[PK])}).`;
+  heatLegend($('#lg-indep'));
+  const hc = (v, tipL) => { const td = h('td', {class: 'hc ' + (isNum(v) ? binCls(binOf(v)) : 'hna'), text: cor(v)}); bindTip(td, () => tipL); return td; };
+  $('#t-indep').replaceChildren(h('table', {class: 'fac'},
+    h('thead', null, h('tr', null, h('th', {text: 'Sector'}), h('th', {class: 'n', text: 'Your weight'}),
+      h('th', {class: 'c', text: 'Portfolio'}), h('th', {class: 'c', text: th1}), h('th', {class: 'c', text: th2}),
+      h('th', {class: 'c', text: 'Net of markets'}), h('th', {class: 'n', text: 'Volatility'}), h('th', {class: 'n', text: 'Vol. with 10%'}))),
+    h('tbody', null, R.map(r => h('tr', null,
+      h('td', null, h('span', {class: 'tname', text: r.sector}), h('div', {class: 'desc', text: r.symbol})),
+      h('td', {class: 'n', text: pct(r.w_port)}),
+      hc(r.corr[PK], [`${r.sector} and your portfolio`, `correlation ${cor(r.corr[PK])}`]),
+      hc(r.corr[th1], [`${r.sector} and ${th1}`, `correlation ${cor(r.corr[th1])}`]),
+      hc(r.corr[th2], [`${r.sector} and ${th2}`, `correlation ${cor(r.corr[th2])}`]),
+      hc(r.corr_ex_world, [`${r.sector} and the portfolio net of the MSCI World`, `correlation of the residuals ${cor(r.corr_ex_world)}`]),
+      h('td', {class: 'n', text: pct(r.vol)}),
+      h('td', {class: 'n', text: `${pct(r.vol_mix10)} (${r.d_vol_mix10 > 0 ? '+' : ''}${nf(1).format(r.d_vol_mix10 * 100)})`}))))));
+  $('#indep-note').textContent = `“Net of markets”: correlation of what is left after removing the MSCI World's move from both; a negative value means that, for the same market move, the sector tends to go the opposite way to the portfolio. `
+    + `“Vol. with 10%”: annual volatility of a mix of 90% today's portfolio and 10% the sector (today ${pct(X.vol_port)}), with the difference in points. It is a calculation, not a recommendation. `
+    + 'The sector ETFs are American, so for world sectors the measure is approximate. Two years is a short window and correlations change, especially in crises.';
+}
+
+function currencies() {
+  const keys = {};
+  for (const r of [...D.ccy_quote, ...D.ccy_eco]) keys[r.k] = Math.max(keys[r.k] || 0, r.w);
+  const named = Object.entries(keys).filter(([k]) => k !== 'Other' && k !== 'Not broken down').sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k]) => k);
+  const col = k => named.includes(k) ? `var(--s${named.indexOf(k) + 1})` : 'var(--other)';
+  /* same fixed order in both bars: the main currencies first, then the others */
+  const fold = arr => {
+    const o = named.map(k => arr.find(r => r.k === k)).filter(Boolean).map(r => ({...r}));
+    const rest = arr.filter(r => !named.includes(r.k));
+    const w = rest.reduce((s, r) => s + r.w, 0);
+    if (w > 0.0005) o.push({k: 'Other', w, parts: rest});
+    return o;
+  };
+  const bars = [['Currency it is quoted in', fold(D.ccy_quote)], ['Currency the value depends on', fold(D.ccy_eco)]];
+  legend($('#lg-ccy'), [...named.map(k => [`${k} (${CCY[k] || k})`, col(k)]), ['Other currencies', 'var(--other)']]);
+  const box = h('div', {class: 'c100'});
+  for (const [lab, items] of bars) {
+    const row = h('div', {class: 'row'});
+    for (const it of items) {
+      const sg = h('div', {class: 'seg'});
+      sg.style.flex = `${it.w} 1 0`;
+      sg.style.setProperty('--c', col(it.k));
+      bindTip(sg, () => [`${CCY[it.k] || it.k}: ${pct(it.w)}`, lab.toLowerCase(),
+        it.parts ? it.parts.filter(p => p.w >= 0.0005).slice(0, 8).map(p => `${p.k} ${pct(p.w)}`).join(', ') : null]);
+      row.append(sg);
+    }
+    const parts = items.filter(it => it.w >= 0.005).map(it => `${it.k === 'Other' ? 'other' : it.k} ${pct(it.w, 0)}`);
+    box.append(h('div', null, h('div', {class: 'lab'}, h('b', {text: lab}), ': ' + parts.join(', ')), row));
+  }
+  $('#ch-ccy').replaceChildren(box);
+  const q = Object.fromEntries(fold(D.ccy_quote).map(r => [r.k, r.w])), e = Object.fromEntries(fold(D.ccy_eco).map(r => [r.k, r.w]));
+  const ks = [...named, 'Other'];
+  $('#t-ccy').replaceChildren(h('table', null,
+    h('thead', null, h('tr', null, h('th', {text: 'Currency'}), h('th', {class: 'n', text: 'Quote'}), h('th', {class: 'n', text: 'Economic value'}))),
+    h('tbody', null, ks.map(k => h('tr', null, h('td', {text: CCY[k] || k}), h('td', {class: 'n', text: pct(q[k] || 0)}), h('td', {class: 'n', text: pct(e[k] || 0)}))))));
+}
+
+/* ---------- dependencies ---------- */
+function clusters() {
+  const box = $('#clusters');
+  for (const c of D.clusters) {
+    const chips = c.tickers.map(t => {
+      const late = (c.late || []).includes(t);
+      const ch = h('span', {class: 'chip' + (late ? ' late' : ''), text: t + (late ? '*' : '')});
+      const a = A[t];
+      bindTip(ch, () => [`${a.name} (${t})`, `weight ${pct(a.w)}, share of risk ${pct(a.rc)}`, a.theme, late ? 'less than a year of history: link still to be confirmed' : null]);
+      return ch;
+    });
+    box.append(h('div', {class: 'card'},
+      h('div', {class: 'cl-id', text: `Group ${c.id}`}),
+      h('h3', {class: 'cl-name', text: c.name}),
+      h('div', {class: 'cl-m'}, h('span', {class: 'nw', text: `${pct(c.w)} of the value`}), ', ',
+        h('span', {class: 'nw', text: `${pct(c.rc)} of the risk`}), ', ',
+        h('span', {class: 'nw', text: `average correlation ${cor(c.avg_corr)}`})),
+      h('div', {class: 'chips'}, chips)));
+  }
+  const anyLate = D.clusters.some(c => (c.late || []).length);
+  $('#loners').textContent = (D.loners.length ? `Not in any group, so with moves more their own: ${list(D.loners)}. ` : '')
+    + (anyLate ? '* Holding with less than a year of history, added to the group it most resembles: link still to be confirmed.' : '');
+}
+
+function heatmap(root) {
+  const t = D.corr.tickers, M = D.corr.m, n = t.length, lab = 46;
+  const avail = Math.max(320, root.clientWidth);
+  const cs = Math.max(12, Math.min(20, Math.floor((avail - lab - 4) / n)));
+  const W = lab + n * cs + 2, H = lab + n * cs + 2;
+  const svg = sv('svg', {width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Correlation map of the holdings'});
+  const gy = [], gx = [];
+  t.forEach((tk, i) => {
+    const c = lab + i * cs + cs / 2, s = tk + (isShort(tk) ? '*' : '');
+    gy.push(svText(svg, lab - 5, c, s, {'text-anchor': 'end', 'dominant-baseline': 'central', class: 'hm-l'}));
+    gx.push(svText(svg, 0, 0, s, {transform: `translate(${c},${lab - 5}) rotate(-90)`, 'dominant-baseline': 'central', class: 'hm-l'}));
+  });
+  for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+    const v = M[i][j];
+    sv('rect', {x: lab + j * cs + 1, y: lab + i * cs + 1, width: cs - 2, height: cs - 2, rx: 2,
+      fill: v == null ? 'var(--surface-2)' : binVar(binOf(v))}, svg);
+  }
+  for (const c of D.clusters) {
+    const idx = c.tickers.map(x => t.indexOf(x)).filter(k => k >= 0);
+    const lo = Math.min(...idx), hi = Math.max(...idx);
+    if (hi - lo + 1 !== idx.length) continue;
+    sv('rect', {x: lab + lo * cs, y: lab + lo * cs, width: (hi - lo + 1) * cs, height: (hi - lo + 1) * cs,
+      fill: 'none', stroke: 'var(--ink)', 'stroke-width': 1.5, rx: 3}, svg);
+  }
+  const hit = sv('rect', {x: lab, y: lab, width: n * cs, height: n * cs, fill: 'transparent'}, svg);
+  let on = [];
+  const clear = () => { on.forEach(x => x.classList.remove('on')); on = []; };
+  const onMove = e => {
+    const r = svg.getBoundingClientRect();
+    const j = Math.floor((e.clientX - r.left - lab) / cs), i = Math.floor((e.clientY - r.top - lab) / cs);
+    clear();
+    if (i < 0 || j < 0 || i >= n || j >= n) return tipHide();
+    on = [gy[i], gx[j]];
+    on.forEach(x => x.classList.add('on'));
+    const a = A[t[i]], b = A[t[j]], v = M[i][j];
+    if (i === j) return tipShow(e, [`${a.name} (${a.ticker})`, 'same holding']);
+    tipShow(e, [`${a.ticker} and ${b.ticker}`, `${a.name} and ${b.name}`,
+      v == null ? 'shared history too short for an estimate' : `correlation ${cor(v)}`,
+      (a.short || b.short) && v != null ? 'less than a year of history: fragile figure' : null]);
+  };
+  hit.addEventListener('pointermove', e => { if (e.pointerType !== 'touch') onMove(e); });
+  hit.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch') { tipHide(); clear(); } });
+  hit.addEventListener('click', e => { onMove(e); e.stopPropagation(); });
+  root.replaceChildren(svg);
+}
+
+function pairTable(root, rows, flag) {
+  root.replaceChildren(h('table', null,
+    h('thead', null, h('tr', null, h('th', {text: 'Pair'}), h('th', {class: 'n', text: 'Correlation'}))),
+    h('tbody', null, rows.map(p => h('tr', null,
+      h('td', null, h('span', {class: 'tname', text: `${p.a} and ${p.b}`}), flag && p.short ? h('span', {class: 'badge', text: 'short history'}) : null,
+        h('div', {class: 'desc', text: `${A[p.a].name}, ${A[p.b].name}`})),
+      h('td', {class: 'n', text: cor(p.rho)}))))));
+}
+
+function factors() {
+  heatLegend($('#lg-fac'));
+  const F = D.factor_names;
+  const rows = [];
+  for (const th of themeOrder) {
+    const L = D.assets.filter(a => a.theme === th).sort((a, b) => b.w - a.w);
+    if (!L.length) continue;
+    rows.push(h('tr', {class: 'grp'}, h('td', {colspan: F.length + 2, text: th})));
+    for (const a of L) {
+      rows.push(h('tr', null,
+        h('td', null, h('span', {class: 'tname', text: a.ticker}), a.short ? h('span', {class: 'badge', text: 'short history'}) : null, h('div', {class: 'desc', text: a.name})),
+        h('td', {class: 'n', text: pct(a.w)}),
+        F.map(f => {
+          const v = a.fcorr[f];
+          const td = h('td', {class: 'hc ' + (isNum(v) ? binCls(binOf(v)) : 'hna'), text: cor(v)});
+          bindTip(td, () => [`${a.name} and ${f}`, isNum(v) ? `correlation ${cor(v)}` : 'history too short', a.short ? 'less than a year of history' : null]);
+          return td;
+        })));
+    }
+  }
+  $('#t-fac').replaceChildren(h('table', {class: 'fac'},
+    h('thead', null, h('tr', null, h('th', {text: 'Holding'}), h('th', {class: 'n', text: 'Weight'}), F.map(f => h('th', {class: 'c', text: f})))),
+    h('tbody', null, rows)));
+}
+
+/* ---------- risk ---------- */
+function niceStep(range, n) {
+  const raw = range / n, p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p;
+  return (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * p;
+}
+
+function scatter(root) {
+  const W = Math.max(300, root.clientWidth), H = Math.round(Math.max(290, Math.min(460, W * 0.6)));
+  const m = {l: 46, r: 16, t: 12, b: 42};
+  const pts = [...D.assets].sort((a, b) => a.rc - b.rc);
+  /* the axis maximum falls on a tick, so the last label matches the edge */
+  const step = W < 480 ? 0.04 : 0.02;
+  const top = Math.ceil(Math.max(...pts.map(a => Math.max(a.w, a.rc))) / step - 1e-9) * step;
+  const X = v => m.l + v / top * (W - m.l - m.r), Y = v => H - m.b - v / top * (H - m.t - m.b);
+  const svg = sv('svg', {width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Weight and share of risk of each holding'});
+  for (let k = 0; k * step <= top + 1e-9; k++) {
+    const v = k * step;
+    sv('line', {x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: v ? 'gl' : 'ax'}, svg);
+    sv('line', {x1: X(v), x2: X(v), y1: m.t, y2: H - m.b, class: v ? 'gl' : 'ax'}, svg);
+    svText(svg, m.l - 6, Y(v), pct(v, 0), {'text-anchor': 'end', 'dominant-baseline': 'central', class: 'tk'});
+    if (v > 0) svText(svg, X(v), H - m.b + 15, pct(v, 0), {'text-anchor': 'middle', class: 'tk'});
+  }
+  svText(svg, (m.l + W - m.r) / 2, H - 6, 'Weight in value', {'text-anchor': 'middle', class: 'at'});
+  svText(svg, 0, 0, 'Share of risk', {transform: `translate(12,${(m.t + H - m.b) / 2}) rotate(-90)`, 'text-anchor': 'middle', class: 'at'});
+  sv('line', {x1: X(0), y1: Y(0), x2: X(top), y2: Y(top), class: 'diag'}, svg);
+  const ang = Math.atan2(Y(top) - Y(0), X(top) - X(0)) * 180 / Math.PI;
+  svText(svg, 0, 0, 'risk = weight', {transform: `translate(${X(top * 0.74)},${Y(top * 0.74)}) rotate(${ang}) translate(0,-7)`,
+    'text-anchor': 'middle', class: 'tk halo'});
+  for (const a of pts) sv('circle', {cx: X(a.w), cy: Y(a.rc), r: 4.5, fill: a.rc > a.w ? 'var(--s2)' : 'var(--s1)', stroke: 'var(--surface)', 'stroke-width': 2}, svg);
+  /* labels: first free spot on the right or left, at the same height, above or below the dot */
+  const boxes = [], dxy = pts.map(a => [X(a.w), Y(a.rc)]);
+  const hitDot = (b, self) => dxy.some(([cx, cy], i) => i !== self && cx + 5 > b.l && cx - 5 < b.r && cy + 5 > b.t && cy - 5 < b.b);
+  const hitLab = b => boxes.some(o => b.l < o.r && b.r > o.l && b.t < o.b && b.b > o.t);
+  for (const a of [...pts].reverse()) {
+    if (!(a.rc >= 0.035 || a.w >= 0.05)) continue;
+    const self = pts.indexOf(a), x = X(a.w), y = Y(a.rc), wTxt = a.ticker.length * 7 + 4;
+    const box = c => { const l = c.side > 0 ? x + 8 : x - 8 - wTxt; return {l, r: l + wTxt, t: c.ly - 10, b: c.ly + 3}; };
+    const fits = c => { const b = box(c); return b.l >= m.l && b.r <= W - m.r && b.t >= m.t && b.b <= H - m.b; };
+    const cands = [4, -8, 16, -20, 28].flatMap(dy => [1, -1].map(side => ({side, ly: y + dy})));
+    const c = cands.find(k => fits(k) && !hitDot(box(k), self) && !hitLab(box(k))) || cands.find(k => fits(k) && !hitLab(box(k))) || cands[0];
+    boxes.push(box(c));
+    svText(svg, c.side > 0 ? x + 8 : x - 8, c.ly, a.ticker, {'text-anchor': c.side > 0 ? 'start' : 'end', class: 'pl'});
+  }
+  for (const a of pts) {
+    const c = sv('circle', {cx: X(a.w), cy: Y(a.rc), r: 10, fill: 'transparent'}, svg);
+    bindTip(c, () => [`${a.name} (${a.ticker})`, `weight ${pct(a.w)}, share of risk ${pct(a.rc)}`,
+      `volatility ${pct(a.vol, 0)}, beta ${dec(a.beta)}, correlation with the portfolio ${cor(a.corr_port)}`, a.short ? 'less than a year of history' : null]);
+  }
+  root.replaceChildren(svg);
+}
+
+function lineChart(root) {
+  const W = Math.max(300, root.clientWidth), H = W < 560 ? 240 : 300;
+  const m = {l: 40, r: 60, t: 12, b: 28};
+  const d0 = new Date(BT.dates[0] + 'T12:00:00');
+  const dates = [new Date(d0.getTime() - 7 * 864e5), ...BT.dates.map(s => new Date(s + 'T12:00:00'))];
+  const S = [
+    {name: "Today's weights, fixed (overstates)", v: [100, ...BT.port.map(x => x * 100)], c: 'var(--s1)'},
+    {name: "Today's quantities, unchanged", v: [100, ...BT.hold.map(x => x * 100)], c: 'var(--s3)'},
+    {name: 'MSCI World', v: [100, ...BT.world.map(x => x * 100)], c: 'var(--s2)'},
+  ];
+  const all = S.flatMap(s => s.v);
+  const step = niceStep(Math.max(...all) - Math.min(...all), 5);
+  const y0 = Math.floor(Math.min(...all) / step) * step, y1 = Math.ceil(Math.max(...all) / step) * step;
+  const t0 = dates[0].getTime(), t1 = dates[dates.length - 1].getTime();
+  const X = i => m.l + (dates[i].getTime() - t0) / (t1 - t0) * (W - m.l - m.r);
+  const Xd = d => m.l + (d.getTime() - t0) / (t1 - t0) * (W - m.l - m.r);
+  const Y = v => m.t + (1 - (v - y0) / (y1 - y0)) * (H - m.t - m.b);
+  const svg = sv('svg', {width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Simulation of the last two years against the MSCI World'});
+  for (let v = y0; v <= y1 + 1e-9; v += step) {
+    sv('line', {x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: Math.abs(v - 100) < 1e-9 ? 'ax' : 'gl'}, svg);
+    svText(svg, m.l - 6, Y(v), nf(0).format(v), {'text-anchor': 'end', 'dominant-baseline': 'central', class: 'tk'});
+  }
+  const every = W < 560 ? 6 : 3;
+  for (let d = new Date(dates[0].getFullYear(), dates[0].getMonth() + 1, 1); d <= dates[dates.length - 1]; d = new Date(d.getFullYear(), d.getMonth() + 1, 1)) {
+    if (d.getMonth() % every) continue;
+    const x = Xd(d);
+    sv('line', {x1: x, x2: x, y1: H - m.b, y2: H - m.b + 4, class: 'ax'}, svg);
+    svText(svg, x, H - m.b + 16, `${MONTHS[d.getMonth()]} ${String(d.getFullYear()).slice(2)}`, {'text-anchor': 'middle', class: 'tk'});
+  }
+  for (const s of S) sv('path', {d: s.v.map((v, i) => (i ? 'L' : 'M') + X(i).toFixed(1) + ',' + Y(v).toFixed(1)).join(''), class: 'ln', stroke: s.c}, svg);
+  const ends = S.map(s => ({s, y: Y(s.v[s.v.length - 1])}));
+  const byY = [...ends].sort((a, b) => a.y - b.y);  // end-of-line labels at least 16 px apart
+  for (let k = 1; k < byY.length; k++) if (byY[k].y - byY[k - 1].y < 16) byY[k].y = byY[k - 1].y + 16;
+  S.forEach((s, k) => {
+    const i = s.v.length - 1;
+    sv('circle', {cx: X(i), cy: Y(s.v[i]), r: 4, fill: s.c, stroke: 'var(--surface)', 'stroke-width': 2}, svg);
+    svText(svg, X(i) + 8, ends[k].y, spct(s.v[i] / 100 - 1, 0), {'dominant-baseline': 'central', class: 'el'});
+  });
+  const xh = sv('line', {class: 'xh', y1: m.t, y2: H - m.b, visibility: 'hidden'}, svg);
+  const dots = S.map(s => sv('circle', {r: 4, fill: s.c, stroke: 'var(--surface)', 'stroke-width': 2, visibility: 'hidden'}, svg));
+  const hit = sv('rect', {x: m.l, y: m.t, width: W - m.l - m.r, height: H - m.t - m.b, fill: 'transparent'}, svg);
+  const onMove = e => {
+    const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) * (W / r.width);
+    let best = 0, bd = Infinity;
+    for (let i = 0; i < dates.length; i++) { const dd = Math.abs(X(i) - px); if (dd < bd) { bd = dd; best = i; } }
+    xh.setAttribute('x1', X(best)); xh.setAttribute('x2', X(best)); xh.setAttribute('visibility', 'visible');
+    S.forEach((s, k) => { dots[k].setAttribute('cx', X(best)); dots[k].setAttribute('cy', Y(s.v[best])); dots[k].setAttribute('visibility', 'visible'); });
+    tipShow(e, [best === 0 ? 'Start (base 100)' : `Week ending ${fmtDate(BT.dates[best - 1])}`, ...S.map(s => `${s.name}: ${spct(s.v[best] / 100 - 1)}`)]);
+  };
+  const off = () => { tipHide(); xh.setAttribute('visibility', 'hidden'); dots.forEach(d => d.setAttribute('visibility', 'hidden')); };
+  hit.addEventListener('pointermove', e => { if (e.pointerType !== 'touch') onMove(e); });
+  hit.addEventListener('pointerleave', e => { if (e.pointerType !== 'touch') off(); });
+  hit.addEventListener('click', e => { onMove(e); e.stopPropagation(); });
+  root.replaceChildren(svg);
+}
+
+function risk() {
+  legend($('#lg-sc'), [['Carries less risk than its weight', 'var(--s1)'], ['Carries more risk than its weight', 'var(--s2)']]);
+  legend($('#lg-bt'), [["Today's weights, fixed (overstates)", 'var(--s1)'], ["Today's quantities, unchanged", 'var(--s3)'], ['MSCI World (in euros)', 'var(--s2)']]);
+  const ps = BT.port_stats, ws = BT.world_stats, hs = BT.hold_stats;
+  const trio = k => `${k === 'vol' || k === 'mdd' ? pct(ps[k]) : spct(ps[k])} fixed weights, ${k === 'vol' || k === 'mdd' ? pct(hs[k]) : spct(hs[k])} unchanged quantities, MSCI World ${k === 'vol' || k === 'mdd' ? pct(ws[k]) : spct(ws[k])}`;
+  $('#bt-stats').replaceChildren(
+    h('span', null, h('b', {text: 'Total: '}), trio('total')),
+    h('span', null, h('b', {text: 'Per year: '}), trio('ann')),
+    h('span', null, h('b', {text: 'Volatility: '}), trio('vol')),
+    h('span', null, h('b', {text: 'Maximum drawdown: '}), trio('mdd')));
+  const fxs = stressOf('Dollar');
+  $('#stress-fx').textContent = `Dollar: conversion effect only, at unchanged dollar prices. With the sensitivity measured over the last two years (beta ${dec(P.beta.Dollar)}), it would be about ${spct(fxs.obs_impact)} (${seur(fxs.obs_impact_eur)}), with a wide margin of error.`;
+  const maxImp = Math.max(...D.stress.map(s => Math.abs(s.impact || 0)), 1e-9);
+  $('#t-stress').replaceChildren(h('table', null,
+    h('thead', null, h('tr', null, h('th', {text: 'Scenario'}), h('th', {class: 'n', text: 'Estimated effect'}), h('th', {class: 'n', text: 'In euros'}))),
+    h('tbody', null, D.stress.map(s => {
+      const b = h('div', {class: 'bar'});
+      b.style.width = `${Math.abs(s.impact || 0) / maxImp * 100}%`;
+      b.style.setProperty('--c', 'var(--s1)');
+      b.style.marginTop = '4px';
+      return h('tr', null, h('td', null, s.label, b), h('td', {class: 'n neg', text: spct(s.impact)}), h('td', {class: 'n', text: seur(s.impact_eur)}));
+    }))));
+  $('#t-worst').replaceChildren(h('table', null,
+    h('thead', null, h('tr', null, h('th', {text: 'Week ending'}), h('th', {class: 'n', text: 'Portfolio'}), h('th', {class: 'n', text: 'MSCI World'}))),
+    h('tbody', null, BT.worst.map(wk => {
+      const i = BT.dates.indexOf(wk.date);
+      const wr = i > 0 ? BT.world[i] / BT.world[i - 1] - 1 : i === 0 ? BT.world[0] - 1 : null;
+      return h('tr', null, h('td', {text: fmtDate(wk.date)}), h('td', {class: 'n neg', text: spct(wk.r)}), h('td', {class: 'n ' + sgn(wr), text: spct(wr)}));
+    }))));
+}
+
+/* ---------- ETFs ---------- */
+const fmtAum = a => {
+  if (!a) return NA;
+  if (typeof a !== 'object') return String(a);
+  const v = a.value, c = a.currency ? a.currency + ' ' : '';
+  if (!isNum(v)) return NA;
+  return v >= 1e9 ? `${c}${nf(1).format(v / 1e9)}bn` : `${c}${nf(v >= 1e8 ? 0 : 1).format(v / 1e6)}m`;
+};
+const fmtRepl = s => !s ? NA : /synth|swap/i.test(s) ? 'synthetic' : /sampl|optim|ottim/i.test(s) ? 'physical (sampling)' : /phys|fisic/i.test(s) ? 'physical' : s;
+const fmtDist = s => !s ? NA : /^\s*acc/i.test(s) ? 'accumulating' : /dist/i.test(s) ? 'distributing' : s;
+
+function etfs() {
+  $('#etf-lead').textContent = hasEtf
+    ? "Holdings taken from the issuers' websites and documents, or from secondary sources where the site could not be reached: each card gives the date and quality of the data. Overlaps count only the published positions, so they are a minimum."
+    : 'ETF holdings are not available in this version of the report.';
+  const ov = [...D.overlap].sort((a, b) => b.via_w - a.via_w);
+  $('#t-overlap').replaceChildren(ov.length ? h('table', null,
+    h('thead', null, h('tr', null, h('th', {text: 'Holding'}), h('th', {class: 'n', text: 'Direct'}), h('th', {text: 'Via ETFs'}), h('th', {class: 'n', text: 'Total'}))),
+    h('tbody', null, ov.map(o => h('tr', null,
+      h('td', null, h('span', {class: 'tname', text: o.ticker}), h('div', {class: 'desc', text: o.name})),
+      h('td', {class: 'n', text: pct(o.direct, 2)}),
+      h('td', null, o.via.map(v => h('div', {text: `${v.etf}: ${tiny(v.w, 2)} (${pct(v.w_in_etf, 2)} of the fund)`}))),
+      h('td', {class: 'n', text: pct(o.total, 2)}))))) : h('p', {class: 'note', text: 'No overlap found.'}));
+  const hid = D.hidden.slice(0, 12);
+  if (hid.length) hbars($('#ch-hidden'), hid.map(x => ({label: cleanName(x.name) || x.ticker, sub: `${x.ticker}, via ${x.etfs.join(' and ')}`, values: [x.w],
+    tip: [cleanName(x.name) || x.ticker, `${pct(x.w, 2)} of the portfolio`, `via ${x.etfs.join(' and ')}`]})), {colors: ['var(--s1)'], fmt: v => pct(v, 2)});
+  else $('#ch-hidden').replaceChildren(h('p', {class: 'note', text: 'Data not available.'}));
+  $('#t-etfpairs').replaceChildren(D.etf_pairs.length ? h('table', null,
+    h('thead', null, h('tr', null, h('th', {text: 'ETFs'}), h('th', {text: 'Holdings in common'}), h('th', {class: 'n', text: 'Weight in common'}))),
+    h('tbody', null, D.etf_pairs.map(p => h('tr', null, h('td', {class: 'tname', text: `${p.a} and ${p.b}`}), h('td', {text: p.common.join(', ')}), h('td', {class: 'n', text: pct(p.overlap)})))))
+    : h('p', {class: 'note', text: 'No holdings in common among the main published positions.'}));
+  const box = $('#etfcards');
+  for (const e of [...D.etfs].sort((a, b) => b.w - a.w)) {
+    const th = e.top_holdings || [];
+    const top = th.slice(0, 8);
+    const topSum = th.slice(0, 10).reduce((s, x) => s + (x.weight_pct || 0), 0);
+    const brk = (arr, other) => (arr || []).filter(s => s.w >= 0.005).slice(0, 3)
+      .map(s => `${s.k === 'Cash and other' ? other : s.k} ${pct(s.w, 0)}`).join(', ');
+    const kv = [['Index', e.index || null], ['Annual cost (TER)', isNum(e.ter_pct) ? nf(2).format(e.ter_pct) + '%' : null], ['Assets', fmtAum(e.aum)],
+      ['Holdings', e.n_holdings], ['Launched', e.launch_date ? fmtDate(e.launch_date) : null], ['Replication', fmtRepl(e.replication)], ['Income', fmtDist(e.distribution)],
+      ['Sectors', brk(e.sectors_it, 'Cash and other')], ['Countries', brk(e.countries_it, 'Other and cash')]].filter(([, v]) => v != null && v !== '');
+    /* sources grouped by site: "ishares.com (1 2 3)", one link per document */
+    const groups = [];
+    for (const u of (e.sources || []).map(s => typeof s === 'string' ? s : s && s.url).filter(u => /^https?:\/\//.test(u || ''))) {
+      let host;
+      try { host = new URL(u).hostname.replace(/^www\./, ''); } catch (_) { continue; /* not a valid address: not shown */ }
+      if (/[^\x21-\x7e]/.test(u)) continue; /* spaces, control or bidi characters: not shown */
+      const g = groups.find(x => x.host === host);
+      if (g) g.urls.push(u); else groups.push({host, urls: [u]});
+    }
+    const link = (u, text, label) => h('a', {href: u, target: '_blank', rel: 'noopener noreferrer', text, 'aria-label': label || null});
+    const srcNodes = groups.map((g, k) => [k ? ', ' : '', g.urls.length === 1 ? link(g.urls[0], g.host)
+      : h('span', {class: 'nw'}, `${g.host} (`, g.urls.map((u, i) => [i ? ' ' : '', link(u, String(i + 1), `${g.host}, document ${i + 1}`)]), ')')]);
+    box.append(h('div', {class: 'card etf'},
+      h('h3', {text: `${e.ticker}: ${e.name}`}),
+      h('div', {class: 'meta', text: `${pct(e.w)} of the portfolio, ISIN ${e.isin}`}),
+      h('dl', null, kv.map(([k, v]) => [h('dt', {text: k}), h('dd', {text: String(v)})])),
+      top.length ? h('div', {class: 'meta', text: `Top holdings${topSum ? ` (the top 10 are ${pct(topSum / 100, 0)} of the fund)` : ''}`}) : null,
+      top.length ? h('ol', {class: 'hold'}, top.map(x => h('li', {text: `${cleanName(x.name) || x.ticker} ${isNum(x.weight_pct) ? nf(1).format(x.weight_pct) + '%' : ''}`}))) : null,
+      e.note_it ? h('div', {class: 'q', text: `Data quality: ${fixDates(e.note_it)}`})
+        : e.as_of ? h('div', {class: 'q', text: `Data as of ${fmtDate(e.as_of)}.`}) : null,
+      groups.length ? h('div', {class: 'src'}, 'Sources: ', srcNodes) : null));
+  }
+}
+
+/* ---------- holdings table ---------- */
+function assets() {
+  /* theme, sector, country and group sit under the name: the table stays readable and becomes a card on a narrow screen */
+  const tcell = a => {
+    const meta = [a.theme, a.kind === 'ETF' ? 'ETF' : [a.sector, a.industry].filter(Boolean).join(', '),
+      a.country || (a.kind === 'ETF' ? 'various countries' : ''), a.cluster ? `group ${a.cluster}` : 'no group'].filter(Boolean);
+    return h('td', {class: 'tcell'}, h('span', {class: 'tname', text: a.name}), h('span', {class: 'badge', text: a.ticker}),
+      a.kind === 'ETF' ? h('span', {class: 'badge', text: 'ETF'}) : null,
+      a.short ? h('span', {class: 'badge warn', text: `short history, ${a.n_weeks} wks`}) : null,
+      a.desc ? h('div', {class: 'desc', text: a.desc}) : null,
+      h('div', {class: 'tmeta', text: meta.join(' · ')}));
+  };
+  const num = (t, k, fmt, signed) => ({k, t, n: 1, f: a => h('td', {class: 'n' + (signed ? ' ' + sgn(a[k]) : ''), 'data-l': t, text: fmt(a[k])})});
+  const cols = [
+    {k: 'name', t: 'Holding', s: a => a.name, f: tcell},
+    num('Weight', 'w', v => pct(v)),
+    num('Value', 'value', eur),
+    num('P&L', 'pnl_pct', v => spct(v), true),
+    num('Last year', 'ret_1y', v => spct(v, 0), true),
+    num('Volatility', 'vol', v => pct(v, 0)),
+    num('Max drawdown', 'mdd', v => pct(v, 0)),
+    num('Beta', 'beta', v => dec(v)),
+    num('Corr. portf.', 'corr_port', cor),
+    num('Risk share', 'rc', v => pct(v)),
+  ];
+  let key = 'w', dir = -1;
+  const root = $('#t-assets');
+  function draw() {
+    const c = cols.find(x => x.k === key);
+    const val = a => c.s ? c.s(a) : a[key];
+    const rows = [...D.assets].sort((a, b) => {
+      const x = val(a), y = val(b);
+      if (x == null && y == null) return 0;
+      if (x == null) return 1;
+      if (y == null) return -1;
+      return (typeof x === 'string' ? x.localeCompare(y, 'en') : x - y) * dir;
+    });
+    const head = h('tr', null, cols.map(cc => {
+      const th = h('th', {class: cc.n ? 'n' : null, 'data-k': cc.k, scope: 'col', 'aria-sort': cc.k === key ? (dir > 0 ? 'ascending' : 'descending') : null},
+        cc.t, cc.k === key ? h('span', {class: 'arr', text: dir > 0 ? ' ▲' : ' ▼'}) : null);
+      th.addEventListener('click', () => { if (key === cc.k) dir = -dir; else { key = cc.k; dir = cc.n ? -1 : 1; } draw(); });
+      return th;
+    }));
+    root.replaceChildren(h('table', {class: 'big'}, h('thead', null, head), h('tbody', null, rows.map(a => h('tr', null, cols.map(cc => cc.f(a)))))));
+  }
+  draw();
+}
+
+/* ---------- method ---------- */
+function method() {
+  const items = [
+    D.demo ? `Positions: fictional demo portfolio, ${T.n_lines} lines and ${T.n_assets} invented holdings.`
+      : `Positions: Fineco export “${D.export_file}” (summary portfolio), ${T.n_lines} lines and ${T.n_assets} holdings; a holding listed on two markets is merged into one line.`
+        + ((D.no_prices || []).length ? ` Left out because no prices were found: ${D.no_prices.map(x => `${x.name} (${x.isin})`).join(', ')}.` : ''),
+    D.demo ? `Prices: simulated random walks to ${fmtDate(D.prices_to)}, including the market factors.`
+      : `Prices: daily closes adjusted for dividends and splits, from Yahoo Finance, to ${fmtDate(D.prices_to)}. US stocks bought in Milan use the main dollar listing converted to euros: it is the same security. The MSCI World is measured through an ETF that tracks it (EUNL.DE), not the index itself.`,
+    `Weekly returns in euros (Fridays) over the last ${D.window_weeks} weeks, from ${fmtDate(D.window_from)} to ${fmtDate(D.window_to)}; the last week is partial.`,
+    'Volatility: standard deviation of weekly returns times the square root of 52. Pairwise correlations only with at least 12 weeks in common; before risk is computed, the matrix is made internally consistent.',
+    'Share of risk: the part of the portfolio variance due to each holding (weight times covariance with the portfolio, divided by the variance). The shares add up to 100%.',
+    'Groups: average-linkage hierarchical clustering on the distance square root of (1 - correlation) / 2, cut at 0.55 (average correlation around 0.4), on holdings with at least 52 weeks of history. More recent holdings join the group with which they have the highest average correlation, if it is at least 0.4.',
+    "Scenarios: the portfolio's weekly sensitivity (beta) to each market, multiplied by the shock. It is a linear estimate: in crises correlations rise and losses can be larger. The dollar scenario counts only the exchange-rate effect on the part that depends on the dollar.",
+    "Simulation, two conventions. Fixed weights: today's weights applied to the last two years, rebalancing every week; holdings that did not exist yet are left out and the others reweighted. Since today's weights are high in holdings that have already risen, this version counts the same gain twice. Unchanged quantities: today's number of shares held for two years without rebalancing. In both, the holdings are chosen today: they are not the return you earned.",
+    "Independent sectors: Select Sector SPDR ETFs (XLK, XLC, XLY, XLP, XLV, XLF, XLI, XLE, XLU, XLB, XLRE) from Yahoo Finance, converted to euros, same weeks as the report. Correlations with the portfolio at today's weights and with the two themes with the highest share of risk (today's weights within the theme). Net of markets: correlation of the residuals after regressing each series on the MSCI World. 10% mix: 0.9 portfolio + 0.1 sector, rebalanced every week.",
+    'Independent bets: the square of the diversification ratio (weighted average volatility of the holdings divided by the volatility of the portfolio). It takes correlations into account: many holdings that move together count as few bets.',
+    'Volatility compared with the MSCI World: the historical figure over the last two years with fixed weights. The risk shares use the covariance matrix, which gives a slightly different volatility (' + pct(P.vol) + ').',
+    'ETFs: holdings from the issuers or, where the site could not be reached, from secondary sources (see each card). Country and economic currency of the ETFs follow the countries of the companies they hold. Overlaps count the published positions, so they are a minimum.',
+    "Economic currency: the currency of the country where the company is based (conversion effect); for a US stock it is the dollar even if you buy it in euros. It does not consider where the company earns its revenue.",
+    'Gain or loss on cost: value today minus the purchase cost of open positions. It does not include dividends received, past sales, fees or taxes, and it ignores when the money went in: it is not a return.',
+    'Descriptive analysis for information only. It is not financial advice, and I am not a licensed financial adviser. Nothing here is an invitation to buy or sell.',
+  ];
+  $('#method').replaceChildren(...items.map(t => h('li', {text: t})));
+}
+
+/* ---------- critique ---------- */
+const md = s => String(s).split('**').map((p, i) => i % 2 ? h('b', {text: p}) : p);
+function critique() {
+  const C = D.critique;
+  if (!C) { $('#critica').hidden = true; return; }
+  $('#crit-weak').replaceChildren(...C.weak.map((w, i) => h('li', {class: 'crit-i'}, h('span', {class: 'crit-n', text: String(i + 1)}),
+    h('div', null, h('b', {text: w.title}), h('p', null, md(w.text))))));
+  $('#crit-strong').replaceChildren(...C.strong.map(s => h('li', null, md(s))));
+  $('#crit-caveat').textContent = C.caveat;
+  const groups = [...new Set(C.levers.map(l => l.group))];
+  $('#crit-levers').replaceChildren(...groups.flatMap(g => [h('div', {class: 'lgroup', text: g}),
+    h('div', {class: 'levers'}, ...C.levers.filter(l => l.group === g).map(l => h('div', {class: 'lever'}, h('b', {text: l.title}), h('p', {text: l.text}),
+      h('div', {class: 'refs', text: `Relates to ${l.refs.length > 1 ? 'weaknesses' : 'weakness'} ${list(l.refs.map(String))}`}))))]));
+  $('#crit-tax').textContent = C.tax;
+}
+
+/* ---------- start ---------- */
+kpis(); findings(); critique(); themes(); sectors(); indep(); currencies(); clusters();
+heatLegend($('#lg-heat'));
+pairTable($('#t-pairs-top'), D.pairs_top, true);
+pairTable($('#t-pairs-low'), D.pairs_low, false);
+factors(); risk(); etfs(); assets(); method();
+compoLegends();
+const charts = [[$('#ch-heat'), heatmap], [$('#ch-scatter'), scatter], [$('#ch-bt'), lineChart], [$('#ch-va'), drawVA], [$('#ch-tm'), drawTM], [$('#ch-dd'), drawDD], [$('#ch-pnl'), drawPnl]];
+const widths = new Map();
+const drawAll = () => charts.forEach(([el, fn]) => {
+  const w = el.clientWidth;
+  if (Math.abs((widths.get(el) || 0) - w) > 4) { widths.set(el, w); fn(el); }
+});
+drawAll();
+let rt = 0;
+if (window.ResizeObserver) new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(drawAll, 120); }).observe(document.body);
+else addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(drawAll, 120); });
+})();
+</script>
+</body>
+</html>
