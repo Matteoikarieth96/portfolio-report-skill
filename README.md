@@ -104,6 +104,7 @@ They run offline on the fictional demo; the masking test needs `node` and is ski
 - [3d-print-design-skill](https://github.com/Matteoikarieth96/3d-print-design-skill): FDM 3D-printable parts in code, from questions to a checked STL
 - [beer-can-label-skill](https://github.com/Matteoikarieth96/beer-can-label-skill): print-ready beer can labels with a 3D preview
 - [breadboard-wiring-guide-skill](https://github.com/Matteoikarieth96/breadboard-wiring-guide-skill): step-by-step breadboard wiring guides for Arduino UNO
+- [cartoon-shorts](https://github.com/Matteoikarieth96/cartoon-shorts-skill): animated cartoon shorts (9:16) for YouTube Shorts, TikTok and Reels, interview first, rendered locally
 
 ## Licence
 
