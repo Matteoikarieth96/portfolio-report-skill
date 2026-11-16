@@ -106,6 +106,7 @@ They run offline on the fictional demo; the masking test needs `node` and is ski
 - [breadboard-wiring-guide-skill](https://github.com/Matteoikarieth96/breadboard-wiring-guide-skill): step-by-step breadboard wiring guides for Arduino UNO
 - [cartoon-shorts](https://github.com/Matteoikarieth96/cartoon-shorts-skill): animated cartoon shorts (9:16) for YouTube Shorts, TikTok and Reels, interview first, rendered locally
 - [x2d-print](https://github.com/Matteoikarieth96/x2d-print-skill): STL parts to a ready-to-print Bambu Studio project for the Bambu Lab X2D, with a beginner guide
+- [launch-video](https://github.com/Matteoikarieth96/launch-video-skill): launch videos for apps and websites in 16:9 and 9:16, light and dark, rendered locally from the real site
 
 ## Licence
 
