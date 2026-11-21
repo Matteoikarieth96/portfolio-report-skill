@@ -1,6 +1,6 @@
 ---
 name: portfolio-report
-description: Turn a Fineco "Portafoglio" export (.xls) into a full English portfolio analysis. Outputs a long interactive report (themes, sectors, regions, currencies, correlations and clusters, market betas, risk contributions, scenarios, ETF look-through and overlaps, value over time, critique with general points to consider) and an A4 one-pager with PDFs. Euro amounts can be hidden with a switch at the top of each page. Use it whenever the user passes a portfolio export or asks to analyse, re-run, refresh or update the analysis of their portfolio, e.g. "here is my new portfolio export", "analyse my Fineco portfolio", "rifai il report del portafoglio", "ho scaricato il nuovo export Fineco", "aggiorna l'analisi". Descriptive analysis only, never investment advice. Not for single-stock research or trading.
+description: Turn a Fineco "Portafoglio" export (.xls) into an English portfolio analysis (interactive report plus A4 one-pager and PDFs). Use when the user passes a portfolio export or asks to redo or update the analysis, e.g. "rifai il report del portafoglio", "ho scaricato il nuovo export Fineco", "aggiorna l'analisi". Descriptive only, never investment advice. Not for single-stock research or trading.
 ---
 
 # portfolio-report
@@ -10,6 +10,8 @@ The user hands over a portfolio export, and you deliver `report.html`, `onepager
 - describing securities that are new since the last run;
 - researching the look-through of new ETFs;
 - reading the results before handing them over.
+
+Both pages are in English. The report covers themes, sectors, regions, currencies, correlations and clusters, market betas, risk contributions, scenarios, ETF look-through and overlaps, value over time and a critique with general points to consider.
 
 `$SKILL` is the folder holding this file; the scripts are in `$SKILL/scripts/`.
 
